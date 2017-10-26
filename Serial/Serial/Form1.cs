@@ -7,13 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 using System.IO;
-using System.Text;
 using System.Windows;
 using System.IO.Ports;
 using System.Threading;
@@ -35,6 +29,9 @@ namespace Serial
         OpenFileDialog openFileDialog1 = new OpenFileDialog();
         string file_path = null;
         int file_lenght = 0;
+        int file_lenght_short = 0;
+        int file_lenght_full = 0;
+        int remain = 0;
         FileStream fs;
 
         string selectedValue_comPort = "COM5";
@@ -52,15 +49,6 @@ namespace Serial
             comboBox2.Items.Add("9600"); 
             comboBox2.Items.Add("115200");
             comboBox2.SelectedIndex = 1;
-
-            //serial.PortName = "COM5";
-            //serial.BaudRate = 115200;
-            //serial.Handshake = System.IO.Ports.Handshake.None;
-            //serial.Parity = Parity.None;
-            //serial.DataBits = 8;
-            //serial.StopBits = StopBits.One;
-            //serial.ReadTimeout = 1000;
-            //serial.WriteTimeout = 5000;
 
             textBox2.Text += Convert.ToString(modbus_adr);
         }
@@ -84,6 +72,7 @@ namespace Serial
         {
             i = 0;
             int status = 0;
+            
 
             try
             {                
@@ -96,23 +85,34 @@ namespace Serial
                 serial.StopBits = StopBits.One;
                 serial.ReadTimeout = 1000;
                 serial.WriteTimeout = 5000;
-
-
+                
                 serial.Open();
-
-                byte[] bytestosend = new byte[file_lenght];
- 
                 serial.DiscardOutBuffer();
                 serial.DiscardInBuffer();
 
-                status = fs.Read(bytestosend, 0, file_lenght);
+                byte[] size_send = new byte[4];
+                byte[] crc_send = new byte[4];
+                byte[] bytestosend = new byte[file_lenght_full];
+
+                size_send = BitConverter.GetBytes(file_lenght);
+                serial.Write(size_send, 0, 4);
+
+                //service[4] = Convert.ToByte(0);
+                //service[5] = Convert.ToByte(0);
+                //service[6] = Convert.ToByte(0);
+                //service[7] = Convert.ToByte(0);
+
+                //serial.Write(service, 0, 8);
+                System.Threading.Thread.Sleep(3);   
+
+                status = fs.Read(bytestosend, 0, file_lenght_full);
                 if (status == 0)
                 {
                     MessageBox.Show("Ошибка чтения файла прошивки");
                 }
                 else 
-                { 
-                    for (i = 0; i < bytestosend.Length; i += 8)
+                {
+                    for (i = 0; i < file_lenght_full; i += 8)
                     {
                         serial.DiscardOutBuffer();
                         serial.DiscardInBuffer();
@@ -131,7 +131,7 @@ namespace Serial
             }
             catch
             {
-                MessageBox.Show("Ошибка открытия COM порта");
+                MessageBox.Show("Ошибка SERIAL");
             }
         }
 
@@ -142,9 +142,12 @@ namespace Serial
             thread.IsBackground = true;
             thread.Start();
 
+            file_lenght_short = ((int)file_lenght / 8) * 8;
+            remain = file_lenght - file_lenght_short;
+            file_lenght_full = file_lenght_short + 8;
+            
             progressBar1.Value = 0;
-            progressBar1.Maximum = file_lenght;
-
+            progressBar1.Maximum = file_lenght_full;
             
             thread_2 = new Thread(new ThreadStart(prog_bar));
             thread_2.IsBackground = true;
@@ -204,16 +207,20 @@ namespace Serial
 
         private void button4_Click(object sender, System.EventArgs e)
         {
-
-
-
             if (openFileDialog1.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                textBox1.Text += openFileDialog1.FileName;
-                file_path = openFileDialog1.FileName;
-                fs = new FileStream(@file_path, FileMode.Open);
-                file_lenght = (int)fs.Length;
-                label1.Text = file_lenght.ToString();
+                try 
+                { 
+                    textBox1.Text += openFileDialog1.FileName;
+                    file_path = openFileDialog1.FileName;
+                    fs = new FileStream(@file_path, FileMode.Open);
+                    file_lenght = (int)fs.Length;
+                    label1.Text = file_lenght.ToString();
+                }
+                catch
+                {
+                    MessageBox.Show("Файл уже открыт");
+                }
                 
             }
         }
