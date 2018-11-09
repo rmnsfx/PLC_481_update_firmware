@@ -21,6 +21,7 @@ namespace Serial
 
 
         int i = 0;
+        int stop = 0;
         SerialPort serial = new SerialPort();
         
         Thread thread = null;
@@ -60,10 +61,12 @@ namespace Serial
                 if (InvokeRequired)
                 {
                     this.Invoke(new SetProgressBarValue(SetProgressValue), i);
-                }            
+                }
+
+                if (stop == 1) break;
             }
 
-            System.Threading.Thread.Sleep(800);
+            System.Threading.Thread.Sleep(100);
             MessageBox.Show("Прошивка завершена");
 
         }
@@ -112,12 +115,12 @@ namespace Serial
 
                 //Отправляем размер
                 serial.Write(service_send, 0, 8);
-                System.Threading.Thread.Sleep(3000);
+                System.Threading.Thread.Sleep(1000);
 
 
                 //Отправляем crc
                 serial.Write(crc_send, 0, 8);
-                System.Threading.Thread.Sleep(3000);
+                System.Threading.Thread.Sleep(1000);
 
                 
                                        
@@ -138,6 +141,8 @@ namespace Serial
                         System.Threading.Thread.Sleep(5);
                         serial.DiscardOutBuffer();
                         serial.DiscardInBuffer();
+
+                        if (stop == 1) break;
                     }                   
                 }
 
@@ -182,7 +187,7 @@ namespace Serial
         //Кнопка загрузка
         private void button1_Click(object sender, EventArgs e)
         {
-
+            stop = 0;
             thread = new Thread(new ThreadStart(SerialOpen));
             thread.IsBackground = true;
             thread.Start();
@@ -302,6 +307,13 @@ namespace Serial
 
         private void Form1_Load(object sender, EventArgs e)
         {
+
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            stop = 1;            
+            i = 0;
 
         }
 
