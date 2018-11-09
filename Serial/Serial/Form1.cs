@@ -91,43 +91,57 @@ namespace Serial
                 serial.DiscardInBuffer();
 
                 byte[] service_send = new byte[8];
-                byte[] size_send = new byte[4];
-                byte[] crc_send = new byte[4];                
+                byte[] size_send = new byte[8];
+                byte[] crc_send = new byte[8];                 
                 byte[] bytestosend = new byte[file_lenght_full];
+                byte[] erase_command = new byte[] { 4, 8, 1, 0, 0, 0, 0, 0 };
                 
 
                 size_send = BitConverter.GetBytes(file_lenght);
-                //serial.Write(size_send, 0, 4);
-
+                
                 status = fs.Read(bytestosend, 0, file_lenght);
 
                 GetCRC(bytestosend, file_lenght, ref crc_send);
 
-                size_send.CopyTo(service_send, 0);
-                crc_send.CopyTo(service_send, 4);
+                size_send.CopyTo(service_send, 4);
+                
+                //Команда на стирание
+                serial.Write(erase_command, 0, 8);
+                System.Threading.Thread.Sleep(5);
 
-                serial.Write(service_send, 0, 8);                
+
+                //Отправляем размер
+                serial.Write(service_send, 0, 8);
+                System.Threading.Thread.Sleep(3000);
+
+
+                //Отправляем crc
+                serial.Write(crc_send, 0, 8);
+                System.Threading.Thread.Sleep(3000);
+
                 
-                
-                System.Threading.Thread.Sleep(5);                        
+                                       
                 
                 if (status == 0)
                 {
                     MessageBox.Show("Ошибка чтения файла прошивки");
                 }
                 else 
-                {              
-                    
-                    
+                {
+
+
                     for (i = 0; i < file_lenght_full; i += 8)
                     {
-                        serial.DiscardOutBuffer();
-                        serial.DiscardInBuffer();
+      
                         serial.Write(bytestosend, i, 8);
 
-                        System.Threading.Thread.Sleep(5);                        
+                        System.Threading.Thread.Sleep(5);
+                        serial.DiscardOutBuffer();
+                        serial.DiscardInBuffer();
                     }                   
                 }
+
+
 
                 fs.Position = 0;
 
@@ -165,7 +179,7 @@ namespace Serial
             CRC[0] = CRCLow = (byte)(CRCFull & 0xFF);
         }
 
-
+        //Кнопка загрузка
         private void button1_Click(object sender, EventArgs e)
         {
 
@@ -186,6 +200,7 @@ namespace Serial
             
         }
 
+        //Кнопка стереть flash
         private void button2_Click(object sender, System.EventArgs e)
         {
 
@@ -206,6 +221,7 @@ namespace Serial
             serial.Close();
         }
 
+        //Кнопка переход в режим загрузчика
         private void button3_Click(object sender, System.EventArgs e)
         {
 
