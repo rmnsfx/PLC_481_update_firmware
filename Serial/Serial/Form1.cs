@@ -22,6 +22,7 @@ namespace Serial
 
         int i = 0;
         int stop = 0;
+        string str = "";
         SerialPort serial = new SerialPort();
         
         Thread thread = null;
@@ -60,7 +61,7 @@ namespace Serial
             {
                 if (InvokeRequired)
                 {
-                    this.Invoke(new SetProgressBarValue(SetProgressValue), i);
+                    this.Invoke(new SetProgressBarValue(SetProgressValue), i);                    
                 }
 
                 if (stop == 1) break;
@@ -107,21 +108,27 @@ namespace Serial
                 GetCRC(bytestosend, file_lenght, ref crc_send);
 
                 size_send.CopyTo(service_send, 4);
+
+                serial.DiscardOutBuffer();
+                serial.DiscardInBuffer();
                 
-                //Команда на стирание
+                //Команда на стирание                              
                 serial.Write(erase_command, 0, 8);
-                System.Threading.Thread.Sleep(5);
+                label5.Invoke(new Action(() => label5.Text = "Отправлена команда очистки flash"));
+                System.Threading.Thread.Sleep(2000);
 
 
-                //Отправляем размер
+                //Отправляем размер                
                 serial.Write(service_send, 0, 8);
-                System.Threading.Thread.Sleep(1000);
+                label5.Invoke(new Action(() => label5.Text = "Отправлен размер прошивки "));
+                System.Threading.Thread.Sleep(2000);
 
 
-                //Отправляем crc
+                //Отправляем crc                
                 serial.Write(crc_send, 0, 8);
-                System.Threading.Thread.Sleep(1000);
-
+                label5.Invoke(new Action(() => label5.Text = "Отправлен crc-код прошивки "));
+                System.Threading.Thread.Sleep(2000);
+                label5.Invoke(new Action(() => label5.Text = "Передача файла прошивки"));
                 
                                        
                 
@@ -153,6 +160,7 @@ namespace Serial
                 serial.Close();
                 //serial.Dispose();
                 //serial = null;
+                label5.Invoke(new Action(() => label5.Text = "Готово"));
                 
             }
             catch
@@ -209,21 +217,6 @@ namespace Serial
         private void button2_Click(object sender, System.EventArgs e)
         {
 
-            serial.PortName = selectedValue_comPort;
-            serial.BaudRate = selectedValue_baudRate;
-            serial.Handshake = System.IO.Ports.Handshake.None;
-            serial.Parity = Parity.None;
-            serial.DataBits = 8;
-            serial.StopBits = StopBits.One;
-            serial.ReadTimeout = 1000;
-            serial.WriteTimeout = 5000;
-
-            byte[] erase_command = new byte[]{1, 2};
-            serial.Open();
-            serial.DiscardOutBuffer();
-            serial.DiscardInBuffer();
-            serial.Write(erase_command, 0, erase_command.Length);
-            serial.Close();
         }
 
         //Кнопка переход в режим загрузчика
@@ -314,7 +307,33 @@ namespace Serial
         {
             stop = 1;            
             i = 0;
+            label5.Invoke(new Action(() => label5.Text = "Отмена"));
 
+        }
+
+        private void button2_Click_1(object sender, EventArgs e)
+        {
+            serial.PortName = selectedValue_comPort;
+            serial.BaudRate = selectedValue_baudRate;
+            serial.Handshake = System.IO.Ports.Handshake.None;
+            serial.Parity = Parity.None;
+            serial.DataBits = 8;
+            serial.StopBits = StopBits.One;
+            serial.ReadTimeout = 1000;
+            serial.WriteTimeout = 5000;
+
+            byte[] command = new byte[] { 4, 8, 1, 0, 0, 0, 0, 1 };
+            serial.Open();
+            serial.DiscardOutBuffer();
+            serial.DiscardInBuffer();
+            serial.Write(command, 0, command.Length);
+            serial.Close();
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+            //label5.Text = str;
+            //label5.Invoke(new Action(() => label5.Text = str));
         }
 
 
