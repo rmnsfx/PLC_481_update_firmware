@@ -49,7 +49,7 @@
             // 
             this.button1.Location = new System.Drawing.Point(235, 225);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(219, 50);
+            this.button1.Size = new System.Drawing.Size(219, 79);
             this.button1.TabIndex = 0;
             this.button1.Text = "Загрузка прошивки";
             this.button1.UseVisualStyleBackColor = true;
@@ -59,7 +59,7 @@
             // 
             this.button3.Location = new System.Drawing.Point(22, 225);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(175, 50);
+            this.button3.Size = new System.Drawing.Size(175, 79);
             this.button3.TabIndex = 2;
             this.button3.Text = "Обновить основную прошивку";
             this.button3.UseVisualStyleBackColor = true;
@@ -157,17 +157,17 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(235, 281);
+            this.button5.Location = new System.Drawing.Point(235, 310);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(219, 23);
             this.button5.TabIndex = 14;
-            this.button5.Text = "Стоп";
+            this.button5.Text = "Отмена";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(22, 281);
+            this.button2.Location = new System.Drawing.Point(22, 310);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(175, 23);
             this.button2.TabIndex = 13;
@@ -178,7 +178,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 183);
+            this.label5.Location = new System.Drawing.Point(22, 172);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(0, 13);
             this.label5.TabIndex = 15;
@@ -188,7 +188,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(476, 327);
+            this.ClientSize = new System.Drawing.Size(476, 359);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button5);
             this.Controls.Add(this.button2);

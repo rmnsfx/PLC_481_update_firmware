@@ -1,9 +1,14 @@
-D:\Repos\Serial_Port\Serial\Serial\bin\Debug\Serial.exe.config
 D:\Repos\Serial_Port\Serial\Serial\obj\Debug\Serial.csprojResolveAssemblyReference.cache
 D:\Repos\Serial_Port\Serial\Serial\obj\Debug\Serial.Form1.resources
 D:\Repos\Serial_Port\Serial\Serial\obj\Debug\Serial.Properties.Resources.resources
 D:\Repos\Serial_Port\Serial\Serial\obj\Debug\Serial.csproj.GenerateResource.Cache
-D:\Repos\Serial_Port\Serial\Serial\bin\Debug\Serial.exe
-D:\Repos\Serial_Port\Serial\Serial\bin\Debug\Serial.pdb
-D:\Repos\Serial_Port\Serial\Serial\obj\Debug\Serial.exe
-D:\Repos\Serial_Port\Serial\Serial\obj\Debug\Serial.pdb
+D:\Repos\Serial_Port\Serial\Serial\bin\Debug\PLC 481 firmware updater.exe.config
+D:\Repos\Serial_Port\Serial\Serial\bin\Debug\PLC 481 firmware updater.exe.manifest
+D:\Repos\Serial_Port\Serial\Serial\bin\Debug\PLC 481 firmware updater.application
+D:\Repos\Serial_Port\Serial\Serial\bin\Debug\PLC 481 firmware updater.exe
+D:\Repos\Serial_Port\Serial\Serial\bin\Debug\PLC 481 firmware updater.pdb
+D:\Repos\Serial_Port\Serial\Serial\obj\Debug\PLC 481 firmware updater.TrustInfo.xml
+D:\Repos\Serial_Port\Serial\Serial\obj\Debug\PLC 481 firmware updater.exe.manifest
+D:\Repos\Serial_Port\Serial\Serial\obj\Debug\PLC 481 firmware updater.application
+D:\Repos\Serial_Port\Serial\Serial\obj\Debug\PLC 481 firmware updater.exe
+D:\Repos\Serial_Port\Serial\Serial\obj\Debug\PLC 481 firmware updater.pdb

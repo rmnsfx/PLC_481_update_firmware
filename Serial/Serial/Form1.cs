@@ -53,18 +53,22 @@ namespace Serial
             comboBox2.SelectedIndex = 1;
 
             textBox2.Text += Convert.ToString(modbus_adr);
+
+            this.Text = "PLC 481 firmware updater " + Application.ProductVersion.ToString(); 
         }
 
         private void prog_bar()
         {
             while (progressBar1.Value < progressBar1.Maximum)
             {
+                if (stop == 1) break;                
+
                 if (InvokeRequired)
                 {
                     this.Invoke(new SetProgressBarValue(SetProgressValue), i);                    
                 }
 
-                if (stop == 1) break;
+
             }
 
             System.Threading.Thread.Sleep(100);
@@ -114,7 +118,7 @@ namespace Serial
                 
                 //Команда на стирание                              
                 serial.Write(erase_command, 0, 8);
-                label5.Invoke(new Action(() => label5.Text = "Отправлена команда очистки flash"));
+                label5.Invoke(new Action(() => label5.Text = "Отправлена команда для очистки flash"));
                 System.Threading.Thread.Sleep(2000);
 
 
@@ -126,9 +130,9 @@ namespace Serial
 
                 //Отправляем crc                
                 serial.Write(crc_send, 0, 8);
-                label5.Invoke(new Action(() => label5.Text = "Отправлен crc-код прошивки "));
+                label5.Invoke(new Action(() => label5.Text = "Отправлен CRC-код прошивки "));
                 System.Threading.Thread.Sleep(2000);
-                label5.Invoke(new Action(() => label5.Text = "Передача файла прошивки"));
+                label5.Invoke(new Action(() => label5.Text = "Передача данных прошивки"));
                 
                                        
                 
@@ -149,8 +153,9 @@ namespace Serial
                         serial.DiscardOutBuffer();
                         serial.DiscardInBuffer();
 
-                        if (stop == 1) break;
-                    }                   
+                        if (stop == 1) break;                        
+                    }
+                                       
                 }
 
 
@@ -161,11 +166,13 @@ namespace Serial
                 //serial.Dispose();
                 //serial = null;
                 label5.Invoke(new Action(() => label5.Text = "Готово"));
+
+                button2.Enabled = true;
                 
             }
             catch
             {
-                MessageBox.Show("Ошибка SERIAL");
+                MessageBox.Show("Ошибка чтения файла прошивки и отправки служебной команды");
             }
         }
 
@@ -210,6 +217,8 @@ namespace Serial
             thread_2 = new Thread(new ThreadStart(prog_bar));
             thread_2.IsBackground = true;
             thread_2.Start();
+
+            
             
         }
 
@@ -222,22 +231,28 @@ namespace Serial
         //Кнопка переход в режим загрузчика
         private void button3_Click(object sender, System.EventArgs e)
         {
+            try
+            {
+                serial.PortName = selectedValue_comPort;
+                serial.BaudRate = selectedValue_baudRate;
+                serial.Handshake = System.IO.Ports.Handshake.None;
+                serial.Parity = Parity.None;
+                serial.DataBits = 8;
+                serial.StopBits = StopBits.One;
+                serial.ReadTimeout = 1000;
+                serial.WriteTimeout = 5000;
 
-            serial.PortName = selectedValue_comPort;
-            serial.BaudRate = selectedValue_baudRate;
-            serial.Handshake = System.IO.Ports.Handshake.None;
-            serial.Parity = Parity.None;
-            serial.DataBits = 8;
-            serial.StopBits = StopBits.One;
-            serial.ReadTimeout = 1000;
-            serial.WriteTimeout = 5000;
-
-            byte[] erase_command = new byte[] {Convert.ToByte(modbus_adr), 98, 111, 111,  116};
-            serial.Open();
-            serial.DiscardOutBuffer();
-            serial.DiscardInBuffer();
-            serial.Write(erase_command, 0, erase_command.Length);
-            serial.Close();
+                byte[] erase_command = new byte[] { Convert.ToByte(modbus_adr), 98, 111, 111, 116 };
+                serial.Open();
+                serial.DiscardOutBuffer();
+                serial.DiscardInBuffer();
+                serial.Write(erase_command, 0, erase_command.Length);
+                serial.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка открытия COM-порта");
+            }
         }
 
         private void progressBar1_Click(object sender, System.EventArgs e)
@@ -313,28 +328,55 @@ namespace Serial
 
         private void button2_Click_1(object sender, EventArgs e)
         {
-            serial.PortName = selectedValue_comPort;
-            serial.BaudRate = selectedValue_baudRate;
-            serial.Handshake = System.IO.Ports.Handshake.None;
-            serial.Parity = Parity.None;
-            serial.DataBits = 8;
-            serial.StopBits = StopBits.One;
-            serial.ReadTimeout = 1000;
-            serial.WriteTimeout = 5000;
+            try
+            {
+                serial.PortName = selectedValue_comPort;
+                serial.BaudRate = selectedValue_baudRate;
+                serial.Handshake = System.IO.Ports.Handshake.None;
+                serial.Parity = Parity.None;
+                serial.DataBits = 8;
+                serial.StopBits = StopBits.One;
+                serial.ReadTimeout = 1000;
+                serial.WriteTimeout = 5000;
 
-            byte[] command = new byte[] { 4, 8, 1, 0, 0, 0, 0, 1 };
-            serial.Open();
-            serial.DiscardOutBuffer();
-            serial.DiscardInBuffer();
-            serial.Write(command, 0, command.Length);
-            serial.Close();
+                byte[] command = new byte[] { 4, 8, 1, 0, 0, 0, 0, 1 };
+                serial.Open();
+                serial.DiscardOutBuffer();
+                serial.DiscardInBuffer();
+                serial.Write(command, 0, command.Length);
+                serial.Close();
+            }
+            catch
+            {
+                MessageBox.Show("Ошибка открытия COM-порта");
+            }
+            button2.Enabled = false;
         }
 
         private void label5_Click(object sender, EventArgs e)
         {
-            //label5.Text = str;
-            //label5.Invoke(new Action(() => label5.Text = str));
+            
         }
+
+        //private void button6_Click(object sender, EventArgs e)
+        //{
+        //    serial.PortName = selectedValue_comPort;
+        //    serial.BaudRate = selectedValue_baudRate;
+        //    serial.Handshake = System.IO.Ports.Handshake.None;
+        //    serial.Parity = Parity.None;
+        //    serial.DataBits = 8;
+        //    serial.StopBits = StopBits.One;
+        //    serial.ReadTimeout = 1000;
+        //    serial.WriteTimeout = 5000;
+
+        //    byte[] command = new byte[] { 4, 8, 1, 0, 0, 0, 0, 0 };
+        //    serial.Open();
+        //    serial.DiscardOutBuffer();
+        //    serial.DiscardInBuffer();
+        //    serial.Write(command, 0, command.Length);
+        //    serial.Close();
+
+        //}
 
 
     }
