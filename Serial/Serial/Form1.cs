@@ -165,14 +165,18 @@ namespace Serial
                 serial.Close();
                 //serial.Dispose();
                 //serial = null;
-                label5.Invoke(new Action(() => label5.Text = "Готово"));
-
-                button2.Enabled = true;
+                label5.Invoke(new Action(() => label5.Text = "Готово"));                
                 
             }
             catch
             {
                 MessageBox.Show("Ошибка чтения файла прошивки и отправки служебной команды");
+            }
+
+            finally
+            {
+                this.button2.BeginInvoke((MethodInvoker)(() => this.button2.Enabled = true));
+                //button2.Enabled = true;
             }
         }
 
@@ -323,6 +327,8 @@ namespace Serial
             stop = 1;            
             i = 0;
             label5.Invoke(new Action(() => label5.Text = "Отмена"));
+            
+            button2.Enabled = true;
 
         }
 
@@ -350,6 +356,7 @@ namespace Serial
             {
                 MessageBox.Show("Ошибка открытия COM-порта");
             }
+            
             button2.Enabled = false;
         }
 
